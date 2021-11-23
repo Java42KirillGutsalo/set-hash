@@ -3,6 +3,8 @@ package telran.util;
 import java.util.Iterator;
 import java.util.LinkedList;
 
+import org.w3c.dom.Node;
+
 public class HashSet<T> extends AbstractSet<T> {
 private static final int DEFAULT_ARRAY_LENGTH = 16;
 private static final float FACTOR = 0.75f;
@@ -59,6 +61,7 @@ public HashSet() {
 			int indObj = hashTable[index].indexOf(pattern);
 			if(indObj >= 0) {
 				res = hashTable[index].remove(indObj);
+				size--;
 			}
 		}
 		return res;
@@ -76,27 +79,67 @@ public HashSet() {
 
 	@Override
 	public Iterator<T> iterator() {	
-		return new HashSetIterator();
+		
+		return new HashSetIterator<T>();
 	}
 	
-	private class HashSetIterator implements Iterator<T> {
-
+	@SuppressWarnings("hiding")
+	private class HashSetIterator<T> implements Iterator<T> {
+		Iterator<T> backetIterators[];
+		int currentBacketInd = -1;
+		int prevBacketInd;
+		
+		@SuppressWarnings("unchecked")
+		public HashSetIterator() {
+			backetIterators = new Iterator[hashTable.length];
+			for(int i = 0; i < hashTable.length; i++) {
+				if(hashTable[i] != null) {
+					backetIterators[i] = (Iterator<T>) hashTable[i].iterator();
+					if(currentBacketInd < 0) {
+						currentBacketInd = i;
+					}
+				}
+			}
+		}
+		
 		@Override
 		public boolean hasNext() {
-			// TODO Auto-generated method stub
-			return false;
+			return currentBacketInd < backetIterators.length &&
+					backetIterators[currentBacketInd].hasNext();
 		}
 
 		@Override
 		public T next() {
-			// TODO Auto-generated method stub
-			return null;
-		}
-		@Override
-		public void remove() {
-			//TODO
+			T res = backetIterators[currentBacketInd].next();
+			prevBacketInd = currentBacketInd;
+			currentBacketInd = getNextCurrentIndex(currentBacketInd);
+			return res;
 		}
 		
-	}
+		private int getNextCurrentIndex(int currentBacketInd2) {
+			if(!backetIterators[currentBacketInd2].hasNext()) {
+				while(++currentBacketInd2 < backetIterators.length &&
+						(isLinkedListNotExist(currentBacketInd2) || isLinkedListPassed(currentBacketInd2))) {
+					
+				}
+			}
+			return currentBacketInd2;
+		}
 
+		private boolean isLinkedListPassed(int currentBacketInd2) {
+			
+			return !backetIterators[currentBacketInd2].hasNext();
+		}
+
+		private boolean isLinkedListNotExist(int currentBacketInd2) {
+			
+			return backetIterators[currentBacketInd2] == null;
+		}
+
+		@Override
+		public void remove() {
+			backetIterators[prevBacketInd].remove();
+			size--;
+		}
+	}
 }
