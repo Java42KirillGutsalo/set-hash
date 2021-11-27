@@ -2,6 +2,7 @@ package telran.util;
 
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.NoSuchElementException;
 
 public class HashSet<T> extends AbstractSet<T> {
 	private static final int DEFAULT_ARRAY_LENGTH = 16;
@@ -101,7 +102,9 @@ public class HashSet<T> extends AbstractSet<T> {
 
 				@Override
 				public T next() {
-					
+					if(currentIterator == null) {
+						throw new NoSuchElementException();
+					}
 					T res = currentIterator.next();
 					prevIterator = currentIterator;
 					getCurrentIterator();
@@ -138,6 +141,9 @@ public class HashSet<T> extends AbstractSet<T> {
 
 				@Override
 				public void remove() {
+					if(prevIterator == null) {
+						throw new IllegalStateException();
+					}
 					prevIterator.remove();
 					size--;
 				}
