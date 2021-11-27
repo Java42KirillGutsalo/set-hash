@@ -146,6 +146,11 @@ public class HashSet<T> extends AbstractSet<T> {
 					}
 					prevIterator.remove();
 					size--;
+					/* V.R.
+					 * It is necessary to add following
+					 *   prevIterator = null;
+					 * It prevents the second call of remove() without next();   
+					 */
 				}
 	}
 
