@@ -103,7 +103,7 @@ public class HashSet<T> extends AbstractSet<T> {
 				@Override
 				public T next() {
 					if(currentIterator == null) {
-						throw new NoSuchElementException();
+						noSuchElementException();
 					}
 					T res = currentIterator.next();
 					prevIterator = currentIterator;
@@ -142,10 +142,11 @@ public class HashSet<T> extends AbstractSet<T> {
 				@Override
 				public void remove() {
 					if(prevIterator == null) {
-						throw new IllegalStateException();
+						illegalStateException();
 					}
 					prevIterator.remove();
 					size--;
+					prevIterator = null;
 				}
 	}
 
