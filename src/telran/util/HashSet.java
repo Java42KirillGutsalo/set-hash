@@ -87,7 +87,7 @@ public class HashSet<T> extends AbstractSet<T> {
 		
 		return new HashSetIterator();
 	}
-	private class HashSetIterator implements Iterator<T> {
+	private class HashSetIterator extends AbstractIterator<T> {
 			Iterator<T> currentIterator;
 			Iterator<T> prevIterator;
 			int indexIterator = 0;
@@ -101,10 +101,7 @@ public class HashSet<T> extends AbstractSet<T> {
 				}
 
 				@Override
-				public T next() {
-					if(currentIterator == null) {
-						noSuchElementException();
-					}
+				protected T nextObject() {
 					T res = currentIterator.next();
 					prevIterator = currentIterator;
 					getCurrentIterator();
@@ -140,13 +137,9 @@ public class HashSet<T> extends AbstractSet<T> {
 				}
 
 				@Override
-				public void remove() {
-					if(prevIterator == null) {
-						illegalStateException();
-					}
+				protected void removeObject() {
 					prevIterator.remove();
 					size--;
-					prevIterator = null;
 				}
 	}
 
